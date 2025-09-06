@@ -1,0 +1,34 @@
+package automation.values;
+
+import org.springframework.stereotype.Component;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
+@Component
+
+public class BinaryInputValues {
+
+	/*
+	 * BinaryInputs
+	 */
+	// 32 entfernen
+	// 35 hinzufügen mit WAHR
+	// 36 hinzufügen mit FALSCH
+	// 47 hinzufügen mit ALLGEMEIN
+	// 51 ändern zu FALSCH
+	// 63 ändern zu EREIGNIS
+	// 111 für BinaryOuts ändern zu FALSCH
+
+	private int BIwriteToStringCells[] = { 25, 35, 36, 47, 48, 49, 50, 51, 52, 63, 86, 93, 94, 97, 105, 106, 107, 108,
+			109, 111, 112, 113, 114, 125 };
+	private String BIwriteStringValuestoCell[] = { /* 25 */"Normal", /* 35 */"WAHR", /* 36 */"FALSCH",
+			/* 47 */"ALLGEMEIN", /* 48 */"FALSCH", /* 49 */"FALSCH", /* 50 */"WAHR", /* 51 */"FALSCH", /* 52 */"WAHR",
+			/* 63 */"Ereignis", /* 86 */"WAHR", /* 93 */"Allgemein", /* 94 */"WAHR", /* 97 */"Inaktiv Aktiv",
+			/* 105 */"Inaktiv", /* 106 */"WAHR", /* 107 */"FALSCH", /* 108 */"FALSCH", /* 109 */"FALSCH",
+			/* 111 */"WAHR", /* 112 */"WAHR", /* 113 */"FALSCH", /* 114 */"WAHR", /* 125 */"Alarm", };
+	private int BIwriteToDoubleCells[] = { 61, 64, 103, 104, 115 };
+	private double BIwriteDoubleValuesToCell[] = { /* 61 */0, /* 64 */0, /* 103 */0, /* 104 */0, /* 115 */1, };
+
+}
