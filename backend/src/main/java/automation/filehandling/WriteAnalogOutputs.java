@@ -5,12 +5,12 @@ import java.util.List;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.springframework.stereotype.Component;
-import automation.values.AnalogInputValues;
+import automation.values.AnalogOutputValues;
 
 @Component
 public class WriteAnalogOutputs {
 
-	AnalogInputValues values;
+	AnalogOutputValues values;
 
 	private String JCIdevices[] = { "SNE", "SNC", "XPM", "CGM", "IOM" };
 	private final int DEVICE_NAME = 8;
@@ -22,25 +22,25 @@ public class WriteAnalogOutputs {
 	private final int RANGE_OUT_HIGH = 23;
 	private final int MIN_VALUE = 28;
 	private final int MAX_VALUE = 29;
-	private int AIwriteToStringCells[];
-	private String AIwriteStringValuesToCell[];
-	private int AIwriteToDoubleCells[];
-	private double AIwriteDoubleValuesToCell[];
+	private int AOwriteToStringCells[];
+	private String AOwriteStringValuesToCell[];
+	private int AOwriteToDoubleCells[];
+	private double AOwriteDoubleValuesToCell[];
 
-	WriteAnalogOutputs(AnalogInputValues values) {
+	WriteAnalogOutputs(AnalogOutputValues values) {
 		this.values = values;
 	}
 
-	public void writeAnalogOutputs(List<Row> AIRows) {
-		AIwriteToStringCells = values.getAIwriteToStringCells();
-		AIwriteStringValuesToCell = values.getAIwriteStringValuesToCell();
-		AIwriteToDoubleCells = values.getAIwriteToDoubleCells();
-		AIwriteDoubleValuesToCell = values.getAIwriteDoubleValuesToCell();
+	public void writeAnalogOutputs(List<Row> AORows) {
+		AOwriteToStringCells = values.getAOwriteToStringCells();
+		AOwriteStringValuesToCell = values.getAOwriteStringValuesToCell();
+		AOwriteToDoubleCells = values.getAOwriteToDoubleCells();
+		AOwriteDoubleValuesToCell = values.getAOwriteDoubleValuesToCell();
 		Cell cell = null;
 		List<Row> JCIRows = new ArrayList<>();
 		List<Row> NoJCIRows = new ArrayList<>();
 
-		for (Row row : AIRows) {
+		for (Row row : AORows) {
 			String deviceName = row.getCell(DEVICE_NAME).toString();
 			boolean found = false;
 			for (int i = 0; i < JCIdevices.length; i++) {
@@ -75,14 +75,14 @@ public class WriteAnalogOutputs {
 			setValues(row, signal[1], rangeIn, rangeOut);
 		}
 
-		for (Row row : AIRows) {
-			for (int i = 0; i < AIwriteToStringCells.length; i++) {
-				cell = row.getCell(AIwriteToStringCells[i]);
-				cell.setCellValue(AIwriteStringValuesToCell[i]);
+		for (Row row : AORows) {
+			for (int i = 0; i < AOwriteToStringCells.length; i++) {
+				cell = row.getCell(AOwriteToStringCells[i]);
+				cell.setCellValue(AOwriteStringValuesToCell[i]);
 			}
-			for (int i = 0; i < AIwriteToDoubleCells.length; i++) {
-				cell = row.getCell(AIwriteToDoubleCells[i]);
-				cell.setCellValue(AIwriteDoubleValuesToCell[i]);
+			for (int i = 0; i < AOwriteToDoubleCells.length; i++) {
+				cell = row.getCell(AOwriteToDoubleCells[i]);
+				cell.setCellValue(AOwriteDoubleValuesToCell[i]);
 			}
 		}
 	}
