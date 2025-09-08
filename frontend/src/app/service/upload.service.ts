@@ -11,9 +11,11 @@ export class UploadFileService {
 
   constructor(private http: HttpClient) { }
 
-  upload(file: File): Observable<Blob> {
+  upload(file: File, AOTrends: boolean, AITrends: boolean): Observable<Blob> {
     const formData: FormData = new FormData();
     formData.append('file', file);
+    formData.append('AITrends', String(AITrends));
+    formData.append('AOTrends', String(AOTrends));
     return this.http.post(this.baseUrl,formData, {
       responseType : 'blob'
       

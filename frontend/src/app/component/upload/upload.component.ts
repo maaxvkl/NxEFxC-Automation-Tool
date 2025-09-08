@@ -16,6 +16,8 @@ export class UploadFilesComponent implements OnInit {
   currentFileName: string | null = null;
   currentFile!: File
   message = '';
+  AITrends: boolean = false;
+  AOTrends: boolean = false;
 
   constructor(private uploadService : UploadFileService) { }
 
@@ -26,7 +28,7 @@ export class UploadFilesComponent implements OnInit {
   
   upload() {
     if(this.currentFile){
-    this.uploadService.upload(this.currentFile).subscribe(blob => {
+    this.uploadService.upload(this.currentFile, this.AITrends, this.AOTrends).subscribe(blob => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
