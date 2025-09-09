@@ -24,14 +24,14 @@ public class AutomationService {
 	WriteBinaryOutputs BOWriter;
 	WriteAnalogOutputs AOWriter;
 
-	public byte[] generateExcelFile(MultipartFile file) throws IOException, IllegalArgumentException {
+	public byte[] generateExcelFile(MultipartFile file, boolean AITrends, boolean AOTrends) throws IOException, IllegalArgumentException {
 		XSSFWorkbook wb = excelReader.getWorkbookFromExcelFile(file);
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		dataTypes.saveDataTypesToList(wb);
-		AIWriter.writeAnalogInputs(dataTypes.getAnalogInputs());
+		AIWriter.writeAnalogInputs(dataTypes.getAnalogInputs(), AITrends);
 		BIWriter.writeBinaryInputs(dataTypes.getBinaryInputs());
 		BOWriter.writeBinaryOutputs(dataTypes.getBinaryOutputs());
-		AOWriter.writeAnalogOutputs(dataTypes.getAnalogOutputs());
+		AOWriter.writeAnalogOutputs(dataTypes.getAnalogOutputs(), AOTrends);
 		wb.write(outputStream);
 		outputStream.close();
 		return outputStream.toByteArray();

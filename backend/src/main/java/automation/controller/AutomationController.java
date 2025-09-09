@@ -20,8 +20,8 @@ public class AutomationController {
 	private AutomationService automationService;
 
 	@PostMapping("upload")
-	public ResponseEntity<byte[]> uploadxlsm(MultipartFile file) throws IOException, IllegalArgumentException {
-		byte[] processedFile = automationService.generateExcelFile(file);
+	public ResponseEntity<byte[]> uploadxlsm(MultipartFile file, boolean AITrends, boolean AOTrends) throws IOException, IllegalArgumentException {
+		byte[] processedFile = automationService.generateExcelFile(file, AITrends, AOTrends);
 		return new ResponseEntity<>(processedFile, HttpStatus.OK);
 	}
 }

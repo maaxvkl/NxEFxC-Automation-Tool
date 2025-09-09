@@ -6,32 +6,43 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.springframework.stereotype.Component;
 import automation.values.AnalogInputValues;
+import automation.values.AnalogTrendValues;
 
 @Component
 public class WriteAnalogInputs {
 
 	AnalogInputValues values;
+	AnalogTrendValues trendValues;
 
 	private String JCIdevices[] = { "SNE", "SNC", "XPM", "CGM", "IOM" };
 	private final int DEVICE_NAME = 8;
 	private final int PT_MEMO = 215;
 	private final int SIGNAL = 19;
+	private final int UNIT = 24;
 	private final int RANGE_IN_LOW = 20;
 	private final int RANGE_IN_HIGH = 21;
 	private final int RANGE_OUT_LOW = 22;
 	private final int RANGE_OUT_HIGH = 23;
 	private final int MIN_VALUE = 28;
 	private final int MAX_VALUE = 29;
+	private final int CLIENT_COV_INCR = 140;
+
 	private int AIwriteToStringCells[];
 	private String AIwriteStringValuesToCell[];
 	private int AIwriteToDoubleCells[];
 	private double AIwriteDoubleValuesToCell[];
 
-	WriteAnalogInputs(AnalogInputValues values) {
+	private int TrendWriteToStringCells[];
+	private String TrendWriteStringValuesToCell[];
+	private int TrendWriteToDoubleCells[];
+	private double TrendWriteDoubleValuesToCell[];
+
+	WriteAnalogInputs(AnalogInputValues values, AnalogTrendValues trendValues) {
 		this.values = values;
+		this.trendValues = trendValues;
 	}
 
-	public void writeAnalogInputs(List<Row> AIRows) {
+	public void writeAnalogInputs(List<Row> AIRows, boolean AITrends) {
 		AIwriteToStringCells = values.getAIwriteToStringCells();
 		AIwriteStringValuesToCell = values.getAIwriteStringValuesToCell();
 		AIwriteToDoubleCells = values.getAIwriteToDoubleCells();
@@ -50,7 +61,7 @@ public class WriteAnalogInputs {
 					break;
 				}
 			}
-			    if (!found) {
+			if (!found) {
 				NoJCIRows.add(row);
 			}
 		}
@@ -60,7 +71,7 @@ public class WriteAnalogInputs {
 			String subMemo = ptMemo.substring(6); // |2-10V|0;100|]]
 			String signal[] = subMemo.split("\\|"); // 2-10V 0;100 ]]
 			String rangeIn[] = signal[1].split("\\-"); // 2 10V
-			String rangeOut[] = signal[2].split("\\;"); // 0 100 ]]
+			String rangeOut[] = signal[2].split("\\;"); // 0 100]]
 			setJCISignals(row, signal[1]);
 			setValues(row, signal[1], rangeIn, rangeOut);
 		}
@@ -70,7 +81,7 @@ public class WriteAnalogInputs {
 			String subMemo = ptMemo.substring(6); // |2-10V|0;100|]]
 			String signal[] = subMemo.split("\\|"); // 2-10V 0;100|]]
 			String rangeIn[] = signal[1].split("\\-"); // 2 10V
-			String rangeOut[] = signal[2].split("\\;"); // 0 100|]]
+			String rangeOut[] = signal[2].split("\\;"); // 0 100]]
 			setNoJCISignals(row, signal[1]);
 			setValues(row, signal[1], rangeIn, rangeOut);
 		}
@@ -83,6 +94,12 @@ public class WriteAnalogInputs {
 			for (int i = 0; i < AIwriteToDoubleCells.length; i++) {
 				cell = row.getCell(AIwriteToDoubleCells[i]);
 				cell.setCellValue(AIwriteDoubleValuesToCell[i]);
+			}
+		}
+
+		if (AITrends) {
+			for (Row row : AIRows) {
+				setTrendValues(row);
 			}
 		}
 	}
@@ -160,5 +177,30 @@ public class WriteAnalogInputs {
 		cell.setCellValue(minValue);
 		cell = row.getCell(MAX_VALUE);
 		cell.setCellValue(maxValue);
+	}
+
+	private void setTrendValues(Row row) {
+		Cell cell = null;
+		String unit = row.getCell(UNIT).toString();
+		switch (unit) {
+		case "Pa":
+			cell = row.getCell(CLIENT_COV_INCR);
+			cell.setCellValue(5);
+		case "%":
+			cell = row.getCell(CLIENT_COV_INCR);
+			cell.setCellValue(1);
+		case "deg C":
+			cell = row.getCell(CLIENT_COV_INCR);
+			cell.setCellValue(0.2);
+		}
+		for (int i = 0; i < TrendWriteToStringCells.length; i++) {
+			cell = row.getCell(TrendWriteToStringCells[i]);
+			cell.setCellValue(TrendWriteStringValuesToCell[i]);
+		}
+		for (int i = 0; i < TrendWriteToDoubleCells.length; i++) {
+			cell = row.getCell(TrendWriteToDoubleCells[i]);
+			cell.setCellValue(TrendWriteDoubleValuesToCell[i]);
+		}
+
 	}
 }
