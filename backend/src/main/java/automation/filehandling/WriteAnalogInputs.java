@@ -180,6 +180,10 @@ public class WriteAnalogInputs {
 	}
 
 	private void setTrendValues(Row row) {
+		TrendWriteToStringCells = trendValues.getTrendWriteToStringCells();
+		TrendWriteStringValuesToCell = trendValues.getTrendWriteStringValuesToCell();
+		TrendWriteToDoubleCells = trendValues.getTrendWriteToDoubleCells();
+		TrendWriteDoubleValuesToCell = trendValues.getTrendWriteDoubleValuesToCell();
 		Cell cell = null;
 		String unit = row.getCell(UNIT).toString();
 		switch (unit) {
