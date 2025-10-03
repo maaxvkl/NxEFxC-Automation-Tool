@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.springframework.stereotype.Component;
 import automation.values.AnalogInputValues;
 import automation.values.AnalogTrendValues;
+import automation.enumeration.JCIDevices;
 
 @Component
 public class WriteAnalogInputs {
@@ -14,7 +15,6 @@ public class WriteAnalogInputs {
 	AnalogInputValues values;
 	AnalogTrendValues trendValues;
 
-	private String JCIdevices[] = { "SNE", "SNC", "XPM", "CGM", "IOM" };
 	private final int DEVICE_NAME = 8;
 	private final int PT_MEMO = 215;
 	private final int SIGNAL = 19;
@@ -52,10 +52,10 @@ public class WriteAnalogInputs {
 		List<Row> NoJCIRows = new ArrayList<>();
 
 		for (Row row : AIRows) {
-			String deviceName = row.getCell(DEVICE_NAME).toString();
+			String deviceName = row.getCell(DEVICE_NAME).getStringCellValue().trim();
 			boolean found = false;
-			for (int i = 0; i < JCIdevices.length; i++) {
-				if (deviceName.contains(JCIdevices[i])) {
+			for (int i = 0; i < JCIDevices.values().length; i++) {
+				if (deviceName.contains(JCIDevices.values()[i].name())) {
 					JCIRows.add(row);
 					found = true;
 					break;
@@ -67,7 +67,7 @@ public class WriteAnalogInputs {
 		}
 
 		for (Row row : JCIRows) {
-			String ptMemo = row.getCell(PT_MEMO).toString(); // e.g. [[ACE:|2-10V|0;100|]]
+			String ptMemo = row.getCell(PT_MEMO).getStringCellValue().trim(); // e.g. [[ACE:|2-10V|0;100|]]
 			String subMemo = ptMemo.substring(6); // |2-10V|0;100|]]
 			String signal[] = subMemo.split("\\|"); // 2-10V 0;100 ]]
 			String rangeIn[] = signal[1].split("\\-"); // 2 10V
@@ -77,7 +77,7 @@ public class WriteAnalogInputs {
 		}
 
 		for (Row row : NoJCIRows) {
-			String ptMemo = row.getCell(PT_MEMO).toString(); // e.g. [[ACE:|2-10V|0;100|]]
+			String ptMemo = row.getCell(PT_MEMO).getStringCellValue().trim(); // e.g. [[ACE:|2-10V|0;100|]]
 			String subMemo = ptMemo.substring(6); // |2-10V|0;100|]]
 			String signal[] = subMemo.split("\\|"); // 2-10V 0;100|]]
 			String rangeIn[] = signal[1].split("\\-"); // 2 10V
@@ -185,17 +185,20 @@ public class WriteAnalogInputs {
 		TrendWriteToDoubleCells = trendValues.getTrendWriteToDoubleCells();
 		TrendWriteDoubleValuesToCell = trendValues.getTrendWriteDoubleValuesToCell();
 		Cell cell = null;
-		String unit = row.getCell(UNIT).toString();
+		String unit = row.getCell(UNIT).getStringCellValue().trim();
 		switch (unit) {
 		case "Pa":
 			cell = row.getCell(CLIENT_COV_INCR);
 			cell.setCellValue(5);
+			break;
 		case "%":
 			cell = row.getCell(CLIENT_COV_INCR);
 			cell.setCellValue(1);
+			break;
 		case "deg C":
 			cell = row.getCell(CLIENT_COV_INCR);
 			cell.setCellValue(0.2);
+			break;
 		}
 		for (int i = 0; i < TrendWriteToStringCells.length; i++) {
 			cell = row.getCell(TrendWriteToStringCells[i]);

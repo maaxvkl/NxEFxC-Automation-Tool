@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.springframework.stereotype.Component;
 import automation.values.BinaryInputValues;
+import automation.enumeration.JCIDevices;
 
 @Component
 public class WriteBinaryInputs {
@@ -15,16 +16,13 @@ public class WriteBinaryInputs {
 	private final int UNIT = 24;
 	private final int SIGNAL = 19;
 	private final int DEVICE_NAME = 8;
-
-	private String JCIdevices[] = { "SNE", "SNC", "XPM", "CGM", "IOM" };
+	private final int DEFAULT_VALUE = 32;
+	private final int RELING_DEFAULT = 34;
 
 	private int BIwriteToStringCells[];
 	private String BIwriteStringValuesToCell[];
 	private int BIwriteToDoubleCells[];
 	private double BIwriteDoubleValuesToCell[];
-
-	private final int DEFAULT_VALUE = 32;
-	private final int RELING_DEFAULT = 34;
 
 	WriteBinaryInputs(BinaryInputValues values) {
 		this.values = values;
@@ -40,10 +38,10 @@ public class WriteBinaryInputs {
 		List<Row> NoJCIRows = new ArrayList<>();
 
 		for (Row row : BIRows) {
-			String deviceName = row.getCell(DEVICE_NAME).toString();
+			String deviceName = row.getCell(DEVICE_NAME).getStringCellValue().trim();
 			boolean found = false;
-			for (int i = 0; i < JCIdevices.length; i++) {
-				if (deviceName.contains(JCIdevices[i])) {
+			for (int i = 0; i < JCIDevices.values().length; i++) {
+				if (deviceName.contains(JCIDevices.values()[i].name())) {
 					JCIRows.add(row);
 					found = true;
 					break;
@@ -55,14 +53,14 @@ public class WriteBinaryInputs {
 		}
 
 		for (Row row : JCIRows) {
-			String unit = row.getCell(UNIT).toString(); // e.g. Normal/Alarm
+			String unit = row.getCell(UNIT).getStringCellValue().trim(); // e.g. Normal/Alarm
 			String splitUnit[] = unit.split("\\/"); // Normal Alarm
 			setJCISignals(row);
 			setValues(row, splitUnit);
 		}
 
 		for (Row row : NoJCIRows) {
-			String unit = row.getCell(UNIT).toString(); // e.g. Normal/Alarm
+			String unit = row.getCell(UNIT).getStringCellValue().trim(); // e.g. Normal/Alarm
 			String splitUnit[] = unit.split("\\/"); // Normal Alarm
 			setNoJCISignals(row);
 			setValues(row, splitUnit);

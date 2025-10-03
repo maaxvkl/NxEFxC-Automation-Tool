@@ -10,17 +10,6 @@ import lombok.NoArgsConstructor;
 
 public class BinaryInputValues {
 
-	/*
-	 * BinaryInputs
-	 */
-	// 32 entfernen
-	// 35 hinzufügen mit WAHR
-	// 36 hinzufügen mit FALSCH
-	// 47 hinzufügen mit ALLGEMEIN
-	// 51 ändern zu FALSCH
-	// 63 ändern zu EREIGNIS
-	// 111 für BinaryOuts ändern zu FALSCH
-
 	private int BIwriteToStringCells[] = { 25, 35, 36, 47, 48, 49, 50, 51, 52, 63, 86, 93, 94, 97, 105, 106, 107, 108,
 			109, 111, 112, 113, 114, 125 };
 	private String BIwriteStringValuestoCell[] = { /* 25 */"Normal", /* 35 */"WAHR", /* 36 */"FALSCH",

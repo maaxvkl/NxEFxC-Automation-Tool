@@ -6,13 +6,13 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.springframework.stereotype.Component;
 import automation.values.BinaryOutputValues;
+import automation.enumeration.JCIDevices;
 
 @Component
 public class WriteBinaryOutputs {
 	
 	BinaryOutputValues values;
 
-	private String JCIdevices[] = { "SNE", "SNC", "XPM", "CGM", "IOM" };
 	private final int DEVICE_NAME = 8;
 	private final int UNIT = 24;
 	private final int SIGNAL = 19;
@@ -38,10 +38,10 @@ public class WriteBinaryOutputs {
 	List<Row> NoJCIRows = new ArrayList<>();
 
 	for (Row row : BORows) {
-		String deviceName = row.getCell(DEVICE_NAME).toString();
+		String deviceName = row.getCell(DEVICE_NAME).getStringCellValue().trim();
 		boolean found = false;
- 	    for (int i = 0; i < JCIdevices.length; i++) {
-				if (deviceName.contains(JCIdevices[i])) {
+ 	    for (int i = 0; i < JCIDevices.values().length; i++) {
+				if (deviceName.contains(JCIDevices.values()[i].name())) {
 					JCIRows.add(row);
 					found = true;
 					break;
@@ -53,14 +53,14 @@ public class WriteBinaryOutputs {
 		}
 
 		for (Row row : JCIRows) {
-			String unit = row.getCell(UNIT).toString(); // e.g. Normal/Alarm
+			String unit = row.getCell(UNIT).getStringCellValue().trim(); // e.g. Normal/Alarm
 			String splitUnit[] = unit.split("\\/"); // Normal Alarm
 			setJCISignals(row);
 			setValues(row, splitUnit);
 		}
 
 		for (Row row : NoJCIRows) {
-			String unit = row.getCell(UNIT).toString(); // e.g. Normal/Alarm
+			String unit = row.getCell(UNIT).getStringCellValue().trim(); // e.g. Normal/Alarm
 			String splitUnit[] = unit.split("\\/"); // Normal Alarm
 			setNoJCISignals(row);
 			setValues(row, splitUnit);

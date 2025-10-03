@@ -33,7 +33,7 @@ public class AutomationService {
 		BOWriter.writeBinaryOutputs(dataTypes.getBinaryOutputs());
 		AOWriter.writeAnalogOutputs(dataTypes.getAnalogOutputs(), AOTrends);
 		wb.write(outputStream);
-		outputStream.close();
+		outputStream.close();	
 		return outputStream.toByteArray();
 
 	}

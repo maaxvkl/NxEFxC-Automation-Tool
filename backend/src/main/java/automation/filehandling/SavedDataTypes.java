@@ -25,19 +25,19 @@ public class SavedDataTypes {
 		XSSFSheet worksheet = wb.getSheetAt(POINTS);
 		for (Iterator<Row> rowIterator = worksheet.iterator(); rowIterator.hasNext();) {
 			row = rowIterator.next();
-			if (row.getCell(NET_POINT_TYPE).toString().contains("AI")) {
+			if (row.getCell(NET_POINT_TYPE).getStringCellValue().trim().contains("AI")) {
 				analogInputs.add(row);
 			}
 
-			if (row.getCell(NET_POINT_TYPE).toString().contains("BI")) {
+			if (row.getCell(NET_POINT_TYPE).getStringCellValue().trim().contains("BI")) {
 				binaryInputs.add(row);
 			}
 
-			if (row.getCell(NET_POINT_TYPE).toString().contains("BO")) {
+			if (row.getCell(NET_POINT_TYPE).getStringCellValue().trim().contains("BO")) {
 				binaryOutputs.add(row);
 			}
 
-			if (row.getCell(NET_POINT_TYPE).toString().contains("AO")) {
+			if (row.getCell(NET_POINT_TYPE).getStringCellValue().trim().contains("AO")) {
 				analogOutputs.add(row);
 			}
 		}

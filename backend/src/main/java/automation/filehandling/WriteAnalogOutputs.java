@@ -6,13 +6,13 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.springframework.stereotype.Component;
 import automation.values.AnalogOutputValues;
+import automation.enumeration.JCIDevices;
 
 @Component
 public class WriteAnalogOutputs {
 
 	AnalogOutputValues values;
 
-	private String JCIdevices[] = { "SNE", "SNC", "XPM", "CGM", "IOM" };
 	private final int DEVICE_NAME = 8;
 	private final int PT_MEMO = 215;
 	private final int SIGNAL = 19;
@@ -22,6 +22,7 @@ public class WriteAnalogOutputs {
 	private final int RANGE_OUT_HIGH = 23;
 	private final int MIN_VALUE = 28;
 	private final int MAX_VALUE = 29;
+	
 	private int AOwriteToStringCells[];
 	private String AOwriteStringValuesToCell[];
 	private int AOwriteToDoubleCells[];
@@ -31,7 +32,7 @@ public class WriteAnalogOutputs {
 		this.values = values;
 	}
 
-	public void writeAnalogOutputs(List<Row> AORows) {
+	public void writeAnalogOutputs(List<Row> AORows, boolean AOTrends) {
 		AOwriteToStringCells = values.getAOwriteToStringCells();
 		AOwriteStringValuesToCell = values.getAOwriteStringValuesToCell();
 		AOwriteToDoubleCells = values.getAOwriteToDoubleCells();
@@ -41,10 +42,10 @@ public class WriteAnalogOutputs {
 		List<Row> NoJCIRows = new ArrayList<>();
 
 		for (Row row : AORows) {
-			String deviceName = row.getCell(DEVICE_NAME).toString();
+			String deviceName = row.getCell(DEVICE_NAME).getStringCellValue().trim();
 			boolean found = false;
-			for (int i = 0; i < JCIdevices.length; i++) {
-				if (deviceName.contains(JCIdevices[i])) {
+			for (int i = 0; i < JCIDevices.values().length; i++) {
+				if (deviceName.contains(JCIDevices.values()[i].name())) {
 					JCIRows.add(row);
 					found = true;
 					break;
@@ -56,7 +57,7 @@ public class WriteAnalogOutputs {
 		}
 
 		for (Row row : JCIRows) {
-			String ptMemo = row.getCell(PT_MEMO).toString(); // e.g. [[ACE:|2-10V|0;100|]]
+			String ptMemo = row.getCell(PT_MEMO).getStringCellValue().trim(); // e.g. [[ACE:|2-10V|0;100|]]
 			String subMemo = ptMemo.substring(6); // |2-10V|0;100|]]
 			String signal[] = subMemo.split("\\|"); // 2-10V 0;100 ]]
 			String rangeIn[] = signal[1].split("\\-"); // 2 10V
@@ -66,7 +67,7 @@ public class WriteAnalogOutputs {
 		}
 
 		for (Row row : NoJCIRows) {
-			String ptMemo = row.getCell(PT_MEMO).toString(); // e.g. [[ACE:|2-10V|0;100|]]
+			String ptMemo = row.getCell(PT_MEMO).getStringCellValue().trim(); // e.g. [[ACE:|2-10V|0;100|]]
 			String subMemo = ptMemo.substring(6); // |2-10V|0;100|]]
 			String signal[] = subMemo.split("\\|"); // 2-10V 0;100|]]
 			String rangeIn[] = signal[1].split("\\-"); // 2 10V
