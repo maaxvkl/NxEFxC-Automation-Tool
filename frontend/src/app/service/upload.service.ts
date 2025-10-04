@@ -11,7 +11,7 @@ export class UploadFileService {
 
   constructor(private http: HttpClient) { }
 
-  upload(file: File, AOTrends: boolean, AITrends: boolean): Observable<Blob> {
+  upload(file: File, AITrends: boolean, AOTrends: boolean): Observable<Blob> {
     const formData: FormData = new FormData();
     formData.append('file', file);
     formData.append('AITrends', String(AITrends));
