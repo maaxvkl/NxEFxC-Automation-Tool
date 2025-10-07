@@ -6,14 +6,13 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.springframework.stereotype.Component;
 import automation.values.AnalogOutputValues;
-import automation.enumeration.JCIDevices;
+import automation.utility.DeviceUtils;
 
 @Component
 public class WriteAnalogOutputs {
 
 	AnalogOutputValues values;
 
-	private final int DEVICE_NAME = 8;
 	private final int PT_MEMO = 215;
 	private final int SIGNAL = 19;
 	private final int RANGE_IN_LOW = 20;
@@ -40,21 +39,8 @@ public class WriteAnalogOutputs {
 		Cell cell = null;
 		List<Row> JCIRows = new ArrayList<>();
 		List<Row> NoJCIRows = new ArrayList<>();
-
-		for (Row row : AORows) {
-			String deviceName = row.getCell(DEVICE_NAME).getStringCellValue().trim();
-			boolean found = false;
-			for (int i = 0; i < JCIDevices.values().length; i++) {
-				if (deviceName.contains(JCIDevices.values()[i].name())) {
-					JCIRows.add(row);
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				NoJCIRows.add(row);
-			}
-		}
+		
+		DeviceUtils.seperateRowsByDevice(AORows, JCIRows, NoJCIRows);
 
 		for (Row row : JCIRows) {
 			String ptMemo = row.getCell(PT_MEMO).getStringCellValue().trim(); // e.g. [[ACE:|2-10V|0;100|]]

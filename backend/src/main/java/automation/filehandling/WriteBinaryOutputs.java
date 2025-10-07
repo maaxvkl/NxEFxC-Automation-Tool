@@ -6,14 +6,13 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.springframework.stereotype.Component;
 import automation.values.BinaryOutputValues;
-import automation.enumeration.JCIDevices;
+import automation.utility.DeviceUtils;
 
 @Component
 public class WriteBinaryOutputs {
-	
+
 	BinaryOutputValues values;
 
-	private final int DEVICE_NAME = 8;
 	private final int UNIT = 24;
 	private final int SIGNAL = 19;
 	private final int DEFAULT_VALUE = 32;
@@ -23,34 +22,21 @@ public class WriteBinaryOutputs {
 	private String BOwriteStringValuesToCell[];
 	private int BOwriteToDoubleCells[];
 	private double BOwriteDoubleValuesToCell[];
-	
-	WriteBinaryOutputs(BinaryOutputValues values){
+
+	WriteBinaryOutputs(BinaryOutputValues values) {
 		this.values = values;
 	}
 
 	public void writeBinaryOutputs(List<Row> BORows) {
-	Cell cell = null;	
-	BOwriteToStringCells = values.getBOwriteToStringCells();
-	BOwriteStringValuesToCell = values.getBOwriteStringValuestoCell();
-	BOwriteToDoubleCells  = values.getBOwriteToDoubleCells(); 
-	BOwriteDoubleValuesToCell = values.getBOwriteDoubleValuesToCell();	
-	List<Row> JCIRows = new ArrayList<>();
-	List<Row> NoJCIRows = new ArrayList<>();
+		Cell cell = null;
+		BOwriteToStringCells = values.getBOwriteToStringCells();
+		BOwriteStringValuesToCell = values.getBOwriteStringValuestoCell();
+		BOwriteToDoubleCells = values.getBOwriteToDoubleCells();
+		BOwriteDoubleValuesToCell = values.getBOwriteDoubleValuesToCell();
+		List<Row> JCIRows = new ArrayList<>();
+		List<Row> NoJCIRows = new ArrayList<>();
 
-	for (Row row : BORows) {
-		String deviceName = row.getCell(DEVICE_NAME).getStringCellValue().trim();
-		boolean found = false;
- 	    for (int i = 0; i < JCIDevices.values().length; i++) {
-				if (deviceName.contains(JCIDevices.values()[i].name())) {
-					JCIRows.add(row);
-					found = true;
-					break;
-				}
-			}
-			    if (!found) {
-				    NoJCIRows.add(row);
-			}
-		}
+		DeviceUtils.seperateRowsByDevice(BORows, JCIRows, NoJCIRows);
 
 		for (Row row : JCIRows) {
 			String unit = row.getCell(UNIT).getStringCellValue().trim(); // e.g. Normal/Alarm
@@ -65,7 +51,7 @@ public class WriteBinaryOutputs {
 			setNoJCISignals(row);
 			setValues(row, splitUnit);
 		}
-	
+
 		for (Row row : BORows) {
 			for (int i = 0; i < BOwriteToStringCells.length; i++) {
 				cell = row.getCell(BOwriteToStringCells[i]);

@@ -6,7 +6,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.springframework.stereotype.Component;
 import automation.values.BinaryInputValues;
-import automation.enumeration.JCIDevices;
+import automation.utility.DeviceUtils;
 
 @Component
 public class WriteBinaryInputs {
@@ -15,7 +15,6 @@ public class WriteBinaryInputs {
 
 	private final int UNIT = 24;
 	private final int SIGNAL = 19;
-	private final int DEVICE_NAME = 8;
 	private final int DEFAULT_VALUE = 32;
 	private final int RELING_DEFAULT = 34;
 
@@ -36,21 +35,8 @@ public class WriteBinaryInputs {
 		Cell cell = null;
 		List<Row> JCIRows = new ArrayList<>();
 		List<Row> NoJCIRows = new ArrayList<>();
-
-		for (Row row : BIRows) {
-			String deviceName = row.getCell(DEVICE_NAME).getStringCellValue().trim();
-			boolean found = false;
-			for (int i = 0; i < JCIDevices.values().length; i++) {
-				if (deviceName.contains(JCIDevices.values()[i].name())) {
-					JCIRows.add(row);
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				NoJCIRows.add(row);
-			}
-		}
+		
+		DeviceUtils.seperateRowsByDevice(BIRows, JCIRows, NoJCIRows);
 
 		for (Row row : JCIRows) {
 			String unit = row.getCell(UNIT).getStringCellValue().trim(); // e.g. Normal/Alarm
