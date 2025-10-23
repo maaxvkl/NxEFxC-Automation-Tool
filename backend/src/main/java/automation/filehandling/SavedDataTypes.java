@@ -1,8 +1,8 @@
 package automation.filehandling;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -19,28 +19,28 @@ public class SavedDataTypes {
 	private List<Row> analogInputs = new ArrayList<>();
 	private List<Row> binaryOutputs = new ArrayList<>();
 	private List<Row> analogOutputs = new ArrayList<>();
+	private List<Row> binaryValues = new ArrayList<>();
 
 	public void saveDataTypesToList(XSSFWorkbook wb) {
-		Row row = null;
 		XSSFSheet worksheet = wb.getSheetAt(POINTS);
-		for (Iterator<Row> rowIterator = worksheet.iterator(); rowIterator.hasNext();) {
-			row = rowIterator.next();
-			if (row.getCell(NET_POINT_TYPE).getStringCellValue().trim().contains("AI")) {
+		DataFormatter formatter = new DataFormatter(); 
+		
+		for (Row row : worksheet) {
+			if (row == null) continue;
+
+			String cellValue = formatter.formatCellValue(row.getCell(NET_POINT_TYPE)).trim();
+
+			if (cellValue.contains("AI")) {
 				analogInputs.add(row);
-			}
-
-			if (row.getCell(NET_POINT_TYPE).getStringCellValue().trim().contains("BI")) {
+			} else if (cellValue.contains("BI")) {
 				binaryInputs.add(row);
-			}
-
-			if (row.getCell(NET_POINT_TYPE).getStringCellValue().trim().contains("BO")) {
+			} else if (cellValue.contains("BO")) {
 				binaryOutputs.add(row);
-			}
-
-			if (row.getCell(NET_POINT_TYPE).getStringCellValue().trim().contains("AO")) {
+			} else if (cellValue.contains("AO")) {
+				analogOutputs.add(row);
+			} else if (cellValue.contains("BV")) {
 				analogOutputs.add(row);
 			}
 		}
 	}
-
 }

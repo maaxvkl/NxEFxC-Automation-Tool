@@ -2,6 +2,8 @@ package automation.filehandling;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import lombok.AllArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.springframework.stereotype.Component;
@@ -10,72 +12,67 @@ import automation.values.AnalogTrendValues;
 import automation.utility.DeviceUtils;
 
 @Component
+@AllArgsConstructor
 public class WriteAnalogInputs {
 
 	AnalogInputValues values;
 	AnalogTrendValues trendValues;
-
-	private final int PT_MEMO = 215;
 	private final int SIGNAL = 19;
-	private final int UNIT = 24;
-	private final int RANGE_IN_LOW = 20;
-	private final int RANGE_IN_HIGH = 21;
-	private final int RANGE_OUT_LOW = 22;
-	private final int RANGE_OUT_HIGH = 23;
 	private final int MIN_VALUE = 28;
 	private final int MAX_VALUE = 29;
-	private final int CLIENT_COV_INCR = 140;
-
-	private int AIwriteToStringCells[];
-	private String AIwriteStringValuesToCell[];
-	private int AIwriteToDoubleCells[];
-	private double AIwriteDoubleValuesToCell[];
-
-	private int TrendWriteToStringCells[];
-	private String TrendWriteStringValuesToCell[];
-	private int TrendWriteToDoubleCells[];
-	private double TrendWriteDoubleValuesToCell[];
-
-	WriteAnalogInputs(AnalogInputValues values, AnalogTrendValues trendValues) {
-		this.values = values;
-		this.trendValues = trendValues;
-	}
 
 	public void writeAnalogInputs(List<Row> AIRows, boolean AITrends) {
-		AIwriteToStringCells = values.getAIwriteToStringCells();
-		AIwriteStringValuesToCell = values.getAIwriteStringValuesToCell();
-		AIwriteToDoubleCells = values.getAIwriteToDoubleCells();
-		AIwriteDoubleValuesToCell = values.getAIwriteDoubleValuesToCell();
 		Cell cell = null;
 		List<Row> JCIRows = new ArrayList<>();
 		List<Row> NoJCIRows = new ArrayList<>();
-		
+		int[] AIwriteToStringCells = values.getAIwriteToStringCells();
+		String[] AIwriteStringValuesToCell = values.getAIwriteStringValuesToCell();
+		int[] AIwriteToDoubleCells = values.getAIwriteToDoubleCells();
+		double[] AIwriteDoubleValuesToCell = values.getAIwriteDoubleValuesToCell();
+		final int PT_MEMO = 215;
+
 		DeviceUtils.seperateRowsByDevice(AIRows, JCIRows, NoJCIRows);
-		
+
 		for (Row row : JCIRows) {
-			String ptMemo = row.getCell(PT_MEMO).getStringCellValue().trim(); // e.g. [[ACE:|2-10V|0;100|]]
+			String ptMemo = row.getCell(PT_MEMO).toString(); // e.g. [[ACE:|2-10V|0;100|]]
 			String subMemo = ptMemo.substring(6); // |2-10V|0;100|]]
-			String signal[] = subMemo.split("\\|"); // 2-10V 0;100 ]]
-			String rangeIn[] = signal[1].split("\\-"); // 2 10V
-			String rangeOut[] = signal[2].split("\\;"); // 0 100]]
-			setJCISignals(row, signal[1]);
-			setValues(row, signal[1], rangeIn, rangeOut);
+			String[] signal = subMemo.split("\\|"); // 2-10V 0;100 ]]
+			String signalValue = signal[1];
+			String rangeInStr = signal[1];
+			String rangeOutStr = signal[2];
+			String[] rangeIn = (rangeInStr != null && !rangeInStr.isEmpty()) ? rangeInStr.split("\\-")
+					: new String[] { "0", "0" };
+			String[] rangeOut = (rangeOutStr != null && !rangeOutStr.isEmpty()) ? rangeOutStr.split("\\;")
+					: new String[] { "0", "0" };
+			setJCISignals(row, signalValue);
+			setValues(row, signalValue, rangeIn, rangeOut);
 		}
 
 		for (Row row : NoJCIRows) {
-			String ptMemo = row.getCell(PT_MEMO).getStringCellValue().trim(); // e.g. [[ACE:|2-10V|0;100|]]
+			String ptMemo = row.getCell(PT_MEMO).toString(); // e.g. [[ACE:|2-10V|0;100|]]
 			String subMemo = ptMemo.substring(6); // |2-10V|0;100|]]
-			String signal[] = subMemo.split("\\|"); // 2-10V 0;100|]]
-			String rangeIn[] = signal[1].split("\\-"); // 2 10V
-			String rangeOut[] = signal[2].split("\\;"); // 0 100]]
-			setNoJCISignals(row, signal[1]);
-			setValues(row, signal[1], rangeIn, rangeOut);
+			String[] signal = subMemo.split("\\|"); // 2-10V 0;100|]]
+			String signalValue = signal[1];
+			String rangeInStr = signal[1];
+			String rangeOutStr = signal[2];
+			String[] rangeIn = (rangeInStr != null && !rangeInStr.isEmpty()) ? rangeInStr.split("\\-")
+					: new String[] { "0", "0" };
+			String[] rangeOut = (rangeOutStr != null && !rangeOutStr.isEmpty()) ? rangeOutStr.split("\\;")
+					: new String[] { "0", "0" };
+			setNoJCISignals(row, signalValue);
+			setValues(row, signalValue, rangeIn, rangeOut);
 		}
 
 		for (Row row : AIRows) {
 			for (int i = 0; i < AIwriteToStringCells.length; i++) {
 				cell = row.getCell(AIwriteToStringCells[i]);
-				cell.setCellValue(AIwriteStringValuesToCell[i]);
+				if (AIwriteStringValuesToCell[i].equals("WAHR")) {
+					cell.setCellValue(true);
+				} else if (AIwriteStringValuesToCell[i].equals("FALSCH")) {
+					cell.setCellValue(false);
+				} else {
+					cell.setCellValue(AIwriteStringValuesToCell[i]);
+				}
 			}
 			for (int i = 0; i < AIwriteToDoubleCells.length; i++) {
 				cell = row.getCell(AIwriteToDoubleCells[i]);
@@ -98,6 +95,9 @@ public class WriteAnalogInputs {
 		} else if (signal.equals("Pt1000")) {
 			cell = row.getCell(SIGNAL);
 			cell.setCellValue("Platinum 1K RTD");
+		} else if (signal.equals("0-20mA")) {
+			cell = row.getCell(SIGNAL);
+			cell.setCellValue("4-20mA");
 		} else {
 			cell = row.getCell(SIGNAL);
 			cell.setCellValue(signal);
@@ -120,6 +120,10 @@ public class WriteAnalogInputs {
 
 	private void setValues(Row row, String signal, String[] rangeIn, String[] rangeOut) {
 		Cell cell = null;
+		final int RANGE_IN_LOW = 20;
+		final int RANGE_IN_HIGH = 21;
+		final int RANGE_OUT_LOW = 22;
+		final int RANGE_OUT_HIGH = 23;
 		if (!signal.equals("Pt1000")) {
 			String cleanValue = rangeIn[1].replaceAll("[^\\d.,-]", "");
 			cell = row.getCell(RANGE_IN_LOW);
@@ -166,12 +170,15 @@ public class WriteAnalogInputs {
 	}
 
 	private void setTrendValues(Row row) {
-		TrendWriteToStringCells = trendValues.getTrendWriteToStringCells();
-		TrendWriteStringValuesToCell = trendValues.getTrendWriteStringValuesToCell();
-		TrendWriteToDoubleCells = trendValues.getTrendWriteToDoubleCells();
-		TrendWriteDoubleValuesToCell = trendValues.getTrendWriteDoubleValuesToCell();
 		Cell cell = null;
-		String unit = row.getCell(UNIT).getStringCellValue().trim();
+		int[] trendWriteToStringCells = trendValues.getTrendWriteToStringCells();
+		String[] trendWriteStringValuesToCell = trendValues.getTrendWriteStringValuesToCell();
+		int[] trendWriteToDoubleCells = trendValues.getTrendWriteToDoubleCells();
+		double[] trendWriteDoubleValuesToCell = trendValues.getTrendWriteDoubleValuesToCell();
+		final int UNIT = 24;
+		final int CLIENT_COV_INCR = 140;
+
+		String unit = row.getCell(UNIT).toString();
 		switch (unit) {
 		case "Pa":
 			cell = row.getCell(CLIENT_COV_INCR);
@@ -186,13 +193,13 @@ public class WriteAnalogInputs {
 			cell.setCellValue(0.2);
 			break;
 		}
-		for (int i = 0; i < TrendWriteToStringCells.length; i++) {
-			cell = row.getCell(TrendWriteToStringCells[i]);
-			cell.setCellValue(TrendWriteStringValuesToCell[i]);
+		for (int i = 0; i < trendWriteToStringCells.length; i++) {
+			cell = row.getCell(trendWriteToStringCells[i]);
+			cell.setCellValue(trendWriteStringValuesToCell[i]);
 		}
-		for (int i = 0; i < TrendWriteToDoubleCells.length; i++) {
-			cell = row.getCell(TrendWriteToDoubleCells[i]);
-			cell.setCellValue(TrendWriteDoubleValuesToCell[i]);
+		for (int i = 0; i < trendWriteToDoubleCells.length; i++) {
+			cell = row.getCell(trendWriteToDoubleCells[i]);
+			cell.setCellValue(trendWriteDoubleValuesToCell[i]);
 		}
 
 	}

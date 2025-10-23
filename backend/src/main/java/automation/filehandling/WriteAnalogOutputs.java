@@ -6,66 +6,70 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.springframework.stereotype.Component;
 import automation.values.AnalogOutputValues;
+import lombok.AllArgsConstructor;
 import automation.utility.DeviceUtils;
 
 @Component
+@AllArgsConstructor
 public class WriteAnalogOutputs {
 
 	AnalogOutputValues values;
-
-	private final int PT_MEMO = 215;
 	private final int SIGNAL = 19;
-	private final int RANGE_IN_LOW = 20;
-	private final int RANGE_IN_HIGH = 21;
-	private final int RANGE_OUT_LOW = 22;
-	private final int RANGE_OUT_HIGH = 23;
 	private final int MIN_VALUE = 28;
 	private final int MAX_VALUE = 29;
-	
-	private int AOwriteToStringCells[];
-	private String AOwriteStringValuesToCell[];
-	private int AOwriteToDoubleCells[];
-	private double AOwriteDoubleValuesToCell[];
-
-	WriteAnalogOutputs(AnalogOutputValues values) {
-		this.values = values;
-	}
 
 	public void writeAnalogOutputs(List<Row> AORows, boolean AOTrends) {
-		AOwriteToStringCells = values.getAOwriteToStringCells();
-		AOwriteStringValuesToCell = values.getAOwriteStringValuesToCell();
-		AOwriteToDoubleCells = values.getAOwriteToDoubleCells();
-		AOwriteDoubleValuesToCell = values.getAOwriteDoubleValuesToCell();
 		Cell cell = null;
 		List<Row> JCIRows = new ArrayList<>();
 		List<Row> NoJCIRows = new ArrayList<>();
-		
+		int[] AOwriteToStringCells = values.getAOwriteToStringCells();
+		String[] AOwriteStringValuesToCell = values.getAOwriteStringValuesToCell();
+		int[] AOwriteToDoubleCells = values.getAOwriteToDoubleCells();
+		double[] AOwriteDoubleValuesToCell = values.getAOwriteDoubleValuesToCell();
+		int PT_MEMO = 215;
+
 		DeviceUtils.seperateRowsByDevice(AORows, JCIRows, NoJCIRows);
 
 		for (Row row : JCIRows) {
-			String ptMemo = row.getCell(PT_MEMO).getStringCellValue().trim(); // e.g. [[ACE:|2-10V|0;100|]]
+			String ptMemo = row.getCell(PT_MEMO).getStringCellValue(); // e.g. [[ACE:|2-10V|0;100|]]
 			String subMemo = ptMemo.substring(6); // |2-10V|0;100|]]
-			String signal[] = subMemo.split("\\|"); // 2-10V 0;100 ]]
-			String rangeIn[] = signal[1].split("\\-"); // 2 10V
-			String rangeOut[] = signal[2].split("\\;"); // 0 100 ]]
-			setJCISignals(row, signal[1]);
-			setValues(row, signal[1], rangeIn, rangeOut);
+			String signal[] = subMemo.split("\\|"); // 2-10V 0;100|]]
+			String signalValue = signal[1];
+			String rangeInStr = signal[1];
+			String rangeOutStr = signal[2];
+			String[] rangeIn = (rangeInStr != null && !rangeInStr.isEmpty()) ? rangeInStr.split("\\-")
+					: new String[] { "0", "0" };
+			String[] rangeOut = (rangeOutStr != null && !rangeOutStr.isEmpty()) ? rangeOutStr.split("\\;")
+					: new String[] { "0", "0" };
+			setJCISignals(row, signalValue);
+			setValues(row, signalValue, rangeIn, rangeOut);
 		}
 
 		for (Row row : NoJCIRows) {
-			String ptMemo = row.getCell(PT_MEMO).getStringCellValue().trim(); // e.g. [[ACE:|2-10V|0;100|]]
+			String ptMemo = row.getCell(PT_MEMO).getStringCellValue(); // e.g. [[ACE:|2-10V|0;100|]]
 			String subMemo = ptMemo.substring(6); // |2-10V|0;100|]]
 			String signal[] = subMemo.split("\\|"); // 2-10V 0;100|]]
-			String rangeIn[] = signal[1].split("\\-"); // 2 10V
-			String rangeOut[] = signal[2].split("\\;"); // 0 100|]]
-			setNoJCISignals(row, signal[1]);
-			setValues(row, signal[1], rangeIn, rangeOut);
+			String signalValue = signal[1];
+			String rangeInStr = signal[1];
+			String rangeOutStr = signal[2];
+			String[] rangeIn = (rangeInStr != null && !rangeInStr.isEmpty()) ? rangeInStr.split("\\-")
+					: new String[] { "0", "0" };
+			String[] rangeOut = (rangeOutStr != null && !rangeOutStr.isEmpty()) ? rangeOutStr.split("\\;")
+					: new String[] { "0", "0" };
+			setNoJCISignals(row, signalValue);
+			setValues(row, signalValue, rangeIn, rangeOut);
 		}
 
 		for (Row row : AORows) {
 			for (int i = 0; i < AOwriteToStringCells.length; i++) {
 				cell = row.getCell(AOwriteToStringCells[i]);
-				cell.setCellValue(AOwriteStringValuesToCell[i]);
+				if (AOwriteStringValuesToCell[i].equals("WAHR")) {
+					cell.setCellValue(true);
+				} else if (AOwriteStringValuesToCell[i].equals("FALSCH")) {
+					cell.setCellValue(false);
+				} else {
+					cell.setCellValue(AOwriteStringValuesToCell[i]);
+				}
 			}
 			for (int i = 0; i < AOwriteToDoubleCells.length; i++) {
 				cell = row.getCell(AOwriteToDoubleCells[i]);
@@ -98,6 +102,10 @@ public class WriteAnalogOutputs {
 
 	private void setValues(Row row, String signal, String[] rangeIn, String[] rangeOut) {
 		Cell cell = null;
+		int RANGE_IN_LOW = 20;
+		int RANGE_IN_HIGH = 21;
+		int RANGE_OUT_LOW = 22;
+		int RANGE_OUT_HIGH = 23;
 		if (!signal.equals("Pt1000")) {
 			String cleanValue = rangeIn[1].replaceAll("[^\\d.,-]", "");
 			cell = row.getCell(RANGE_IN_LOW);

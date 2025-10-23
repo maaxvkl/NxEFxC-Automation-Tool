@@ -15,15 +15,15 @@ public class ReadExcelFile {
 	private final int NET_POINT_TYPE = 14;
 	private final int POINTS = 3;
 
-	public XSSFWorkbook getWorkbookFromExcelFile(MultipartFile file) throws IOException, IllegalArgumentException {
+	public XSSFWorkbook getWorkbookFromExcelFile(MultipartFile file) throws IOException{
 		InputStream inputStream = file.getInputStream();
 		XSSFWorkbook wb = new XSSFWorkbook(inputStream);
 		if (wb.getSheetAt(POINTS).getSheetName().equals("Points")) {
-			inputStream.close();
 			return wb;
 		} else {
 			inputStream.close();
 			throw new IOException();
 		}
+
 	}
 }
