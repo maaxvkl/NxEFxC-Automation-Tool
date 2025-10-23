@@ -1,31 +1,41 @@
 package automation.utility;
 
 import java.util.List;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import automation.enumeration.JCIDevices;
 
 public class DeviceUtils {
-	
-	private final static int DEVICE_NAME = 8;
 
-	private DeviceUtils() {
+	public static void seperateRowsByDevice(List<Row> dataTypeRows, List<Row> JCIRows, List<Row> NoJCIRows) {
+		final int DEVICE_NAME = 8;
+		DataFormatter formatter = new DataFormatter();
 
-	}
+		for (Row row : dataTypeRows) {
+			if (row == null)
+				continue;
 
-	public static void seperateRowsByDevice(List<Row> DataTypeRows, List<Row> JCIRows, List<Row> NoJCIRows) {
-		for (Row row : DataTypeRows) {
-			String deviceName = row.getCell(DEVICE_NAME).getStringCellValue().trim();
+			Cell cell = row.getCell(DEVICE_NAME);
+			if (cell == null) {
+				continue;
+			}
+
+			String deviceName = formatter.formatCellValue(cell).trim().toUpperCase();
+
 			boolean found = false;
-			for (JCIDevices jciDevices : JCIDevices.values()) {
-				if (deviceName.contains(jciDevices.name())) {
+			for (JCIDevices jciDevice : JCIDevices.values()) {
+				if (deviceName.contains(jciDevice.name().toUpperCase())) {
 					JCIRows.add(row);
 					found = true;
 					break;
 				}
 			}
-			    if (!found) {
-				    NoJCIRows.add(row);
+
+			if (!found) {
+				NoJCIRows.add(row);
 			}
-		}
+		}		
 	}
 }
