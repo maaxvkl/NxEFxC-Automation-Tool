@@ -29,7 +29,7 @@ public class WriteBinaryInputs {
 		DeviceUtils.seperateRowsByDevice(BIRows, JCIRows, NoJCIRows);
 
 		for (Row row : JCIRows) {
-			String unit = row.getCell(UNIT).getStringCellValue(); // e.g. Normal/Alarm
+			String unit = row.getCell(UNIT).toString(); // e.g. Normal/Alarm
 			String[] splitUnit = unit.contains("/") ? unit.split("\\/") : unit.split(" ");
 			setJCISignals(row);
 			setValues(row, splitUnit);

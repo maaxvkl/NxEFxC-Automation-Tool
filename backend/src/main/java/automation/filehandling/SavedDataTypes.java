@@ -15,16 +15,18 @@ public class SavedDataTypes {
 
 	private final int NET_POINT_TYPE = 14;
 	private final int POINTS = 3;
-	private List<Row> binaryInputs = new ArrayList<>();
-	private List<Row> analogInputs = new ArrayList<>();
-	private List<Row> binaryOutputs = new ArrayList<>();
-	private List<Row> analogOutputs = new ArrayList<>();
-	private List<Row> binaryValues = new ArrayList<>();
+	private final List<Row> binaryInputs = new ArrayList<>();
+	private final List<Row> analogInputs = new ArrayList<>();
+	private final List<Row> binaryOutputs = new ArrayList<>();
+	private final List<Row> analogOutputs = new ArrayList<>();
+	private final List<Row> binaryValues = new ArrayList<>();
+	private final List<Row> analogValues = new ArrayList<>();
+	private final List<Row> multiStateValues = new ArrayList<>();
 
 	public void saveDataTypesToList(XSSFWorkbook wb) {
 		XSSFSheet worksheet = wb.getSheetAt(POINTS);
-		DataFormatter formatter = new DataFormatter(); 
-		
+		DataFormatter formatter = new DataFormatter();
+
 		for (Row row : worksheet) {
 			if (row == null) continue;
 
@@ -39,7 +41,11 @@ public class SavedDataTypes {
 			} else if (cellValue.contains("AO")) {
 				analogOutputs.add(row);
 			} else if (cellValue.contains("BV")) {
-				analogOutputs.add(row);
+				binaryValues.add(row);
+			} else if (cellValue.contains("AV")) {
+				analogValues.add(row);
+			} else if (cellValue.contains("MV")) {
+				multiStateValues.add(row);
 			}
 		}
 	}
