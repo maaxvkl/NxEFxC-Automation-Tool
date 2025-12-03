@@ -3,7 +3,7 @@
 ## Description
 The NxEFxC-Automation-Tool is a Java-based algorithm to automate the fill in for the **NxEFxC.xlsm** Excel File
 
-![Tool User Interface](path/to/screenshot1.png)
+![Tool User Interface](screenshots/toolUI.png)
 
 ---
 
