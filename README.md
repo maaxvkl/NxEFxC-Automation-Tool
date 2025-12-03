@@ -42,7 +42,7 @@ In a large project with over 1,000 data points, this tool will save several hour
 ![Processed Excel file](screenshots/pf(2).png)
 *Example: Screenshot of the successful import back to Jabot*  
 ![Successful import back to Jabot](screenshots/imp.png)
-After the successful import back to Jabot every datapoint has its correct values set and now the **Controller Application Files** can be generated and the programming can start!
+After the successful import back to Jabot every datapoint has its correct values set and now the **Controller Application Files** can be generated and the programming can be started!
 
 ---
 
@@ -52,7 +52,7 @@ The project uses the following technologies and libraries:
 - **Java 22/Spring Boot** – main programming language  
 - **Apache POI** – for reading and writing Excel files  
 - **Angular/TypeScript** – for User Interface  
-- **Gradle / Maven** – for project build and dependency management  
+- **Maven** – for project build and dependency management  
 
 ---
 
