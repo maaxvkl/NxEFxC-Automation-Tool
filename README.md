@@ -1,7 +1,7 @@
 # NxEFxC-Automation-Tool
 
 ## Description
-The **NxEFxC-Automation-Tool** is a Java-based algorithm to automate the fill in for the **NxEFxC.xlsm** Excel File
+The **NxEFxC-Automation-Tool** is a Java based algorithm to automate the fill in for the **NxEFxC.xlsm** Excel File
 
 ![Tool User Interface](screenshots/toolUI.png)
 
@@ -49,10 +49,11 @@ After the successful import back to Jabot every datapoint has its correct values
 ## Tools & Technologies
 The project uses the following technologies and libraries:
 
-- **Java 22/Spring Boot** – main programming language  
+- **Java 21/Spring Boot** – main programming language  
 - **Apache POI** – for reading and writing Excel files  
 - **Angular/TypeScript** – for User Interface  
-- **Maven** – for project build and dependency management  
+- **Maven** – for project build and dependency management
+- **ChatGPT** - for CSS styling  
 
 ---
 
