@@ -18,7 +18,7 @@ The NxEFxC.xlsm file contains 260 columns each column is a different datapoint v
 - Polarity
 - Default Value
 
-To fill in every cell in the file it takes hours every time every project by new! Above all if you not that experienced in the Metasys Environment this file can be overwhelming!
+To fill in every cell in the file it takes hours every system by new! Above all if you not that experienced in the Metasys Environment this file can be overwhelming!
 Also you will get back a lot of errors while trying to import the Excel file back to Jabot if the values are not set correctly!
 
 *Example: Screenshot of an unprocessed Excel file*  
