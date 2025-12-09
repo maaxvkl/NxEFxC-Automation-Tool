@@ -14,7 +14,6 @@ import lombok.AllArgsConstructor;
 @Controller
 @AllArgsConstructor
 @RequestMapping("automation/")
-@CrossOrigin(origins = "http://localhost:4200")
 public class AutomationController {
 
 	private AutomationService automationService;
