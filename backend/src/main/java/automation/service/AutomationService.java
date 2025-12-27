@@ -2,15 +2,10 @@ package automation.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import automation.filehandling.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import automation.filehandling.ReadExcelFile;
-import automation.filehandling.SavedDataTypes;
-import automation.filehandling.WriteAnalogInputs;
-import automation.filehandling.WriteAnalogOutputs;
-import automation.filehandling.WriteBinaryInputs;
-import automation.filehandling.WriteBinaryOutputs;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -23,6 +18,9 @@ public class AutomationService {
 	WriteBinaryInputs BIWriter;
 	WriteBinaryOutputs BOWriter;
 	WriteAnalogOutputs AOWriter;
+	WriteMultiStateValues MVWriter;
+	WriteAnalogValues AVWriter;
+	WriteBinaryValues BVWriter;
 
 	public byte[] generateExcelFile(MultipartFile file, boolean AITrends, boolean AOTrends) throws IOException, IllegalArgumentException {
 		XSSFWorkbook wb = excelReader.getWorkbookFromExcelFile(file);
@@ -32,6 +30,15 @@ public class AutomationService {
 		BIWriter.writeBinaryInputs(dataTypes.getBinaryInputs());
 		BOWriter.writeBinaryOutputs(dataTypes.getBinaryOutputs());
 		AOWriter.writeAnalogOutputs(dataTypes.getAnalogOutputs(), AOTrends);
+		if(!dataTypes.getMultiStateValues().isEmpty()){
+			MVWriter.writeMultiStateValues(dataTypes.getMultiStateValues());
+		}
+		if(!dataTypes.getAnalogValues().isEmpty()){
+			AVWriter.writeAnalogValues(dataTypes.getAnalogValues());
+		}
+		if(!dataTypes.getBinaryValues().isEmpty()){
+			BVWriter.writeBinaryValues(dataTypes.getBinaryValues());
+		}
 		wb.write(outputStream);
 		outputStream.close();	
 		return outputStream.toByteArray();
